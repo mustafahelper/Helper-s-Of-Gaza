@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helper's Of Gaza</title>
+<style>
+    body { margin:0; font-family: Arial, sans-serif; background:#f9f9f9; color:#333; }
+    header {
+        position: relative;
+        height: 100vh;
+        background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)),
+        url('https://upload.wikimedia.org/wikipedia/commons/e/ed/Gaza_city_skyline.jpg') center/cover no-repeat;
+        color: white;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        text-align: center; padding: 0 20px;
+    }
+    header img.logo { width: 250px; animation: fadeInDown 1.2s ease; }
+    header h1 { font-size: 3em; margin: 20px 0 10px; animation: fadeInUp 1.5s ease; }
+    header p { font-size: 1.3em; max-width: 700px; animation: fadeInUp 1.8s ease; }
+    header a { display: inline-block; background: #e62e2e; color: white;
+        padding: 15px 30px; font-size: 1.1em; text-decoration: none;
+        border-radius: 5px; margin-top: 20px; animation: fadeInUp 2.1s ease; }
+    section { padding: 60px 20px; max-width: 1000px; margin: 0 auto; }
+    h2 { margin-bottom: 20px; color: #111; }
+    .meter { width: 100%; background: #eee; border-radius: 20px; overflow: hidden; height: 30px; margin-bottom: 10px; }
+    .meter-inner { height: 100%; background: #28a745; width: 0; transition: width 1s ease; }
+    .donation-count { font-size: 1.2em; margin-bottom: 40px; }
+    .news-container { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 20px; }
+    .news-item { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+    .news-item img { width: 100%; height: 160px; object-fit: cover; }
+    .news-item .content { padding: 15px; flex: 1; }
+    .news-item h3 { font-size: 1.1em; margin: 0 0 10px; }
+    .news-item p { font-size: 0.9em; color: #555; }
+    .news-item a { display: inline-block; margin-top: 10px; color: #007bff; text-decoration: none; font-size: 0.9em; }
+    .loader { border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<header>
+    <img class="logo" src="https://i.ibb.co/qj5r92J/helpers-of-gaza-logo.png" alt="Helper's Of Gaza Logo">
+    <h1>Helper's Of Gaza</h1>
+    <p>Together, we can make a difference. Your support matters now more than ever.</p>
+    <a href="https://www.paypal.me/mustafalinkcom" target="_blank">Donate Now</a>
+</header>
+
+<section id="news">
+    <h2>Latest News from Gaza</h2>
+    <div id="news-loader" class="loader"></div>
+    <div id="news-container" class="news-container" style="display:none;"></div>
+</section>
+
+<section>
+    <h2>Our Goal</h2>
+    <p>We aim to raise <strong>₹10,000</strong> to provide urgent humanitarian aid, food, and medical supplies for those impacted in Gaza.</p>
+</section>
+
+<section>
+    <h2>Donation Progress</h2>
+    <div class="donation-count">Raised: ₹<span id="currentAmount">0</span> / 10000</div>
+    <div class="meter">
+        <div class="meter-inner" id="meterBar"></div>
+    </div>
+</section>
+
+<section>
+    <h2>How You Can Help</h2>
+    <ul>
+        <li>🧾 Donate using the button above</li>
+        <li>🔁 Share this page with friends, family, and social media</li>
+        <li>✉️ Volunteer or partner—reach out to us via the contact form</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Contact Us</h2>
+    <p>📸 Instagram: <a href="https://instagram.com/i_stand_with_gaza_palestine" target="_blank">@i_stand_with_gaza_palestine</a></p>
+    <p>📧 Email: <a href="mailto:khanmustafawahid@gmail.com">khanmustafawahid@gmail.com</a></p>
+</section>
+
+<footer>
+    <p>© 2025 Helper's Of Gaza • <a href="#">Privacy Policy</a> • <a href="#">Terms of Use</a></p>
+</footer>
+
+<script>
+let current = 0;
+function updateMeter(amount) {
+    const bar = document.getElementById('meterBar');
+    const span = document.getElementById('currentAmount');
+    const perc = Math.min(100, (amount/10000)*100);
+    bar.style.width = perc + '%';
+    span.textContent = amount.toLocaleString();
+}
+let interval = setInterval(() => {
+    if (current >= 10000) { clearInterval(interval); return; }
+    current += Math.floor(Math.random() * 500);
+    if (current > 10000) current = 10000;
+    updateMeter(current);
+}, 1500);
+
+const API_KEY = 'c330bd5ae8bd4491a080f2401994abcd';
+fetch(`https://newsapi.org/v2/everything?q=Gaza&sortBy=publishedAt&pageSize=6&apiKey=${API_KEY}`)
+    .then(res => res.json())
+    .then(data => {
+        const container = document.getElementById('news-container');
+        const loader = document.getElementById('news-loader');
+        loader.style.display = 'none';
+        container.style.display = 'grid';
+        data.articles.forEach(article => {
+            const div = document.createElement('div');
+            div.classList.add('news-item');
+            div.innerHTML = `
+                <img src="${article.urlToImage || 'https://via.placeholder.com/400x200'}" alt="">
+                <div class="content">
+                    <h3>${article.title}</h3>
+                    <p>${article.description || ''}</p>
+                    <a href="${article.url}" target="_blank">Read more</a>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    })
+    .catch(err => {
+        document.getElementById('news-loader').innerText = 'Failed to load news.';
+    });
+</script>
+
+</body>
+</html>
